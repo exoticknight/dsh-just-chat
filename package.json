@@ -1,7 +1,25 @@
 {
   "name": "dsh-just-chat",
-  "description": "Just Chat entry points for DeepSeek Harness",
+  "description": "One-click native conversations with independent workspaces for DeepSeek Harness",
+  "homepage": "https://github.com/exoticknight/dsh-just-chat#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/exoticknight/dsh-just-chat.git"
+  },
+  "bugs": {
+    "url": "https://github.com/exoticknight/dsh-just-chat/issues"
+  },
+  "keywords": ["dsh", "deepseek-harness", "dsh-plugin", "chat", "workspace"],
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "version": "0.1.0",
+  "license": "Apache-2.0",
+  "author": "exoticknight",
   "type": "module",
   "main": "./index.js",
   "exports": {
@@ -14,7 +32,10 @@
     "index.js",
     "client.js",
     "cordis.patch.yml",
-    "README.md"
+    "README.md",
+    "RED.md",
+    "docs/images",
+    "docs/development.md"
   ],
   "scripts": {
     "setup": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\install-dsh-dev.ps1",

@@ -1,7 +1,7 @@
 version = 1
 
 [document]
-paths = ["docs/**"]
+paths = ["README.md", "docs/**"]
 
 [research]
 path = ".research"
