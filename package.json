@@ -1,0 +1,51 @@
+{
+  "name": "dsh-just-chat",
+  "description": "Just Chat entry points for DeepSeek Harness",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "scripts": {
+    "setup": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\install-dsh-dev.ps1",
+    "test": "node --test \"tests/*.test.js\"",
+    "dev": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\start-dsh-dev.ps1",
+    "dev:install": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\install-dsh-dev.ps1"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-api-session-controller",
+        "@deepseek-ai/dsh-api-workspace-controller",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-layout",
+        "@deepseek-ai/dsh-client-ui-renderer",
+        "@deepseek-ai/dsh-client-ui-sidebar",
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-ui-settings-general",
+        "@deepseek-ai/dsh-client-ui-workspace"
+      ]
+    }
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-home-paths": "0.1.5-rc.2",
+    "@deepseek-ai/schemastery": "^3.18.2"
+  },
+  "devDependencies": {
+    "@deepseek-ai/dsh": "0.1.5-rc.2"
+  }
+}

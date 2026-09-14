@@ -1,0 +1,10 @@
+node_modules/
+.evolve/
+.research/
+.dsh-*/
+output/
+*.log
+*.tgz
+.env
+.env.*
+!.env.example
