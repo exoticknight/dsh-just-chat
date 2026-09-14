@@ -73,10 +73,21 @@ test('Just Chat opens an independent native workspace when no workspace is selec
   }
   const plugin = factory((name) => {
     if (name === 'react') return React
+    if (name === 'react-dom') return { createPortal: () => ({}) }
+    if (name === '@deepseek-ai/dsh-client-ui-primitives') return { Button: 'button', IconNewChatOutline16: () => ({}) }
     throw new Error(`Unexpected dependency: ${name}`)
   })
 
+  const date = new Date(2026, 8, 14, 7, 5, 3)
+  assert.equal(plugin.formatWorkspaceName('{label} · {MM}-{DD} {HH}:{mm}', '快速对话', date), '快速对话 · 09-14 07:05')
+  assert.equal(plugin.formatWorkspaceName('Notes {YYYY}/{MM}/{DD} {ss}', 'Just Chat', date), 'Notes 2026/09/14 03')
+  assert.throws(() => plugin.formatWorkspaceName('{unknown}', 'Just Chat', date))
+  assert.throws(() => plugin.formatWorkspaceName(' ', 'Just Chat', date))
+  assert.throws(() => plugin.formatWorkspaceName('{label}'.repeat(20), 'Just Chat', date))
+
   plugin.apply(ctx)
+  assert.equal(injections.has('settings.general.item'), false)
+  assert.equal(injections.has('settings.plugin.item'), true)
   injections.get('main')()
   const panel = registrations.find(({ spec }) => spec.key === 'dsh-just-chat')?.component
   assert.ok(panel)

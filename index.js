@@ -9,6 +9,7 @@ const SETTINGS_NAMESPACE = 'dsh-just-chat'
 const SettingsSchema = z.object({
   hero: z.boolean().default(true),
   sidebar: z.boolean().default(true),
+  workspaceNameTemplate: z.string().min(1).max(200).default('{label} · {MM}-{DD} {HH}:{mm}'),
 })
 
 export function apply(ctx) {
