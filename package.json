@@ -9,7 +9,13 @@
   "bugs": {
     "url": "https://github.com/exoticknight/dsh-just-chat/issues"
   },
-  "keywords": ["dsh", "deepseek-harness", "dsh-plugin", "chat", "workspace"],
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "dsh-plugin",
+    "chat",
+    "workspace"
+  ],
   "engines": {
     "node": "^22.19.0 || >=24.0.0"
   },
@@ -17,7 +23,7 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "Apache-2.0",
   "author": "exoticknight",
   "type": "module",
