@@ -85,7 +85,9 @@ npm test
 npm pack --dry-run
 ```
 
-检查发布清单包含插件运行文件、README、开发指南和配图，不含调试 Home。提交源码、锁文件和文档；`.gitignore` 排除调试 Home、依赖、临时输出及本地研究记录。不要提交 `.dsh-dev` 中的凭据与对话数据。
+发布包通过 `package.json` 的 `files` 白名单仅包含 `index.js`、`client.js`、`cordis.patch.yml`，以及 npm 自动纳入的 `package.json`、README 和 LICENSE。配图、开发指南与 RED 约定保留在 GitHub 仓库；README 使用在线绝对链接访问它们。`.gitattributes` 的 `export-ignore` 另外将配图排除出源码压缩包。插件运行不依赖这些图片。
+
+提交源码、锁文件和文档；`.gitignore` 排除调试 Home、依赖、临时输出及本地研究记录。不要提交 `.dsh-dev` 中的凭据与对话数据。
 
 ### GitHub 与 npm 发布准备
 
