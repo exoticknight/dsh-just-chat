@@ -6,7 +6,7 @@
 
 为 DeepSeek Harness 添加一键对话入口：点击即可进入独立工作目录中的原生会话，省去手动选择工作区。
 
-![首页标准模式旁和侧栏的快速对话入口](https://raw.githubusercontent.com/exoticknight/dsh-just-chat/main/docs/images/quick-chat.png)
+![点击，即刻开聊：首页和侧栏的快速对话入口，点击即可进入原生对话](https://raw.githubusercontent.com/exoticknight/dsh-just-chat/main/docs/images/quick-chat-promo-v5.png)
 
 ## 功能特点
 
