@@ -4,11 +4,11 @@
 
 ## 准备环境
 
-开发脚本面向 Windows，要求系统已安装 Node.js（`^22.19.0 || >=24.0.0`）、npm、pnpm，并可使用 PowerShell。
+开发脚本可在 Windows、macOS 和 Linux 上运行，要求系统已安装 Node.js（`^22.19.0 || >=24.0.0`）、npm 和 pnpm。
 
 从 GitHub 克隆或下载源码后，在仓库根目录运行：
 
-```powershell
+```sh
 npm run dev
 ```
 
@@ -23,7 +23,7 @@ npm run dev
 
 仅初始化、不启动服务：
 
-```powershell
+```sh
 npm run setup
 ```
 
@@ -33,7 +33,7 @@ npm run setup
 
 若需要在指定的已有 DSH 环境中验证源码，在仓库根目录运行：
 
-```powershell
+```sh
 pnpm install --frozen-lockfile
 dsh plugin --profile web add .
 ```
@@ -42,7 +42,7 @@ dsh plugin --profile web add .
 
 ## 业务验证
 
-```powershell
+```sh
 npm test
 ```
 
@@ -71,8 +71,7 @@ npm test
 | `index.js` | 注册设置、准备目录、调用原生 Workspace 服务 |
 | `client.js` | 入口、原生 UI 组件、配置卡片和命名模板 |
 | `cordis.patch.yml` | DSH bundle 的 Host 激活配置 |
-| `scripts/install-dsh-dev.ps1` | 安装项目内 DSH 与调试插件 |
-| `scripts/start-dsh-dev.ps1` | 初始化并启动隔离的调试环境 |
+| `scripts/dsh-dev.js` | 安装项目内 DSH 与调试插件，或启动隔离的调试环境 |
 | `tests/` | 入口调用与命名规则测试 |
 
 所有功能在插件中实现，不修改 DSH 宿主源码。首页入口使用 `conversation.hero.agentPreset` 的 DOM 锚点，侧栏和配置卡片使用官方插槽；升级 DSH 时需重新验证入口挂载和布局。
@@ -81,7 +80,7 @@ npm test
 
 ## 打包与版本控制
 
-```powershell
+```sh
 npm pack --dry-run
 ```
 
