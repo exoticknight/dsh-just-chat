@@ -3,7 +3,7 @@ window.__ModuleLoader__.load({
   factory: (require) => {
     const React = require('react')
     const { createPortal } = require('react-dom')
-    const { Button, Tag, IconChevronDownOutline14, IconNewChatOutline16 } = require('@deepseek-ai/dsh-client-ui-primitives')
+    const { Button, Tag, IconChevronDownOutlineRegular, IconNewChatOutlineRegular } = require('@deepseek-ai/dsh-client-ui-primitives')
     const module = { exports: {} }
     const exports = module.exports
 
@@ -15,7 +15,7 @@ window.__ModuleLoader__.load({
     let pendingPath
 
     const localeNamespace = 'dsh-just-chat'
-    const settingsNamespace = 'dsh-just-chat'
+    const settingsEntryId = 'dsh-just-chat'
     const defaultNameTemplate = '{label} · {MM}-{DD} {HH}:{mm}'
     const defaultSettings = Object.freeze({ hero: true, sidebar: true, workspaceNameTemplate: defaultNameTemplate })
     const fallbackSettingsSnapshot = Object.freeze({
@@ -72,7 +72,7 @@ window.__ModuleLoader__.load({
     }
 
     function PanelIcon({ size = 16 }) {
-      return React.createElement(IconNewChatOutline16, { size })
+      return React.createElement(IconNewChatOutlineRegular, { size })
     }
 
     // Deliberately a small literal-token formatter, not an executable template language.
@@ -190,7 +190,7 @@ window.__ModuleLoader__.load({
           variant: 'ghost', size: 'sm', onClick: openChat, disabled: busy,
           'aria-label': busy ? t('opening') : t('entry'), title: t('entry'),
           style: { borderRadius: 16, height: 28, padding: '0 8px', gap: 4, whiteSpace: 'nowrap' },
-        }, React.createElement(IconNewChatOutline16, { size: 14 }), busy ? t('opening') : t('entry')),
+        }, React.createElement(IconNewChatOutlineRegular, { size: 14 }), busy ? t('opening') : t('entry')),
         error && React.createElement('span', { role: 'alert', style: {
           position: 'absolute', top: '100%', right: 0, width: 280, zIndex: 10,
           padding: 8, background: 'var(--dsw-alias-bg-layer-3)', color: 'var(--dsw-alias-label-error)',
@@ -291,7 +291,7 @@ window.__ModuleLoader__.load({
         finally { setSaving(false) }
       }
       if (snapshot.status === 'unavailable') return null
-      return React.createElement('li', { className: 'jc-card', 'data-open': open },
+      return React.createElement('section', { className: 'jc-card', 'data-open': open },
         React.createElement('button', {
           className: 'jc-card-header', type: 'button', 'aria-expanded': open,
           'aria-controls': 'just-chat-settings-body',
@@ -302,7 +302,7 @@ window.__ModuleLoader__.load({
             React.createElement('span', { className: 'jc-card-name' }, t('entry')),
             React.createElement('span', { className: 'jc-card-description' }, t('settings.description'))),
           dirty && React.createElement(Tag, { tone: 'neutral' }, t('settings.unsaved')),
-          React.createElement(IconChevronDownOutline14, { className: 'jc-card-chevron' })),
+          React.createElement(IconChevronDownOutlineRegular, { className: 'jc-card-chevron', size: 14 })),
         open && React.createElement('div', { className: 'jc-card-body', id: 'just-chat-settings-body' },
           snapshot.writable === false && React.createElement('p', { className: 'jc-field-hint', role: 'status' }, t('settings.readOnly')),
           ['hero', 'sidebar'].map((key) => React.createElement('div', { key, className: 'jc-field' },
@@ -340,7 +340,7 @@ window.__ModuleLoader__.load({
       'uiWorkspace',
       'layout',
       'locale',
-      'settingsScope',
+      'configForms',
     ]
 
     function apply(ctx) {
@@ -353,7 +353,7 @@ window.__ModuleLoader__.load({
         return () => style.remove()
       }, 'dsh-just-chat: settings styles')
       const locale = ctx.get('locale')
-      entrySettings = ctx.settingsScope.bind({ namespace: settingsNamespace })
+      entrySettings = ctx.configForms.get(settingsEntryId)
 
       ctx.effect(
         () => locale.register(localeNamespace, localeDictionaries),
@@ -409,8 +409,13 @@ window.__ModuleLoader__.load({
         ChatPanel,
       ))
 
-      ctx.slots.inject('settings.plugin.item', () => ctx.slots.register(
-        { name: 'settings.plugin.item', key: settingsNamespace, locale: localeNamespace },
+      ctx.slots.inject('settings.plugins.tab', () => ctx.slots.register(
+        {
+          name: 'settings.plugins.tab',
+          id: settingsEntryId,
+          order: 100,
+          label: () => locale.bind(localeNamespace)('entry'),
+        },
         PluginSettingsCard,
       ))
 

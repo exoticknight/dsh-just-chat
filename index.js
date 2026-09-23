@@ -5,16 +5,18 @@ import { dshHomePath } from '@deepseek-ai/dsh-home-paths'
 
 export const name = 'dsh-just-chat'
 
-const SETTINGS_NAMESPACE = 'dsh-just-chat'
-const SettingsSchema = z.object({
-  hero: z.boolean().default(true),
-  sidebar: z.boolean().default(true),
-  workspaceNameTemplate: z.string().min(1).max(200).default('{label} · {MM}-{DD} {HH}:{mm}'),
+export const Config = z.object({
+  hero: z.boolean().default(true).volatile(),
+  sidebar: z.boolean().default(true).volatile(),
+  workspaceNameTemplate: z.string().min(1).max(200).default('{label} · {MM}-{DD} {HH}:{mm}').volatile(),
 })
 
 export function apply(ctx) {
   ctx.inject(['settings'], (pluginCtx) => {
-    pluginCtx.settings.register(SETTINGS_NAMESPACE, SettingsSchema)
+    pluginCtx.effect(
+      () => pluginCtx.settings.configure({ auto: false }, ctx.fiber),
+      'dsh-just-chat: custom settings card',
+    )
   })
   ctx.inject(['connection', 'workspaceRegistry'], (pluginCtx) => {
     // The shared API channel owns authentication, origin checks, and route lifetime.
