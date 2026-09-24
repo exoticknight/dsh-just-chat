@@ -3,7 +3,7 @@ window.__ModuleLoader__.load({
   factory: (require) => {
     const React = require('react')
     const { createPortal } = require('react-dom')
-    const { Button, Tag, IconChevronDownOutlineRegular, IconNewChatOutlineRegular } = require('@deepseek-ai/dsh-client-ui-primitives')
+    const { Button, Tag, IconChevronDownOutlineRegular, IconThinkOutlineRegular } = require('@deepseek-ai/dsh-client-ui-primitives')
     const module = { exports: {} }
     const exports = module.exports
 
@@ -72,7 +72,7 @@ window.__ModuleLoader__.load({
     }
 
     function PanelIcon({ size = 16 }) {
-      return React.createElement(IconNewChatOutlineRegular, { size })
+      return React.createElement(IconThinkOutlineRegular, { size })
     }
 
     // Deliberately a small literal-token formatter, not an executable template language.
@@ -190,7 +190,7 @@ window.__ModuleLoader__.load({
           variant: 'ghost', size: 'sm', onClick: openChat, disabled: busy,
           'aria-label': busy ? t('opening') : t('entry'), title: t('entry'),
           style: { borderRadius: 16, height: 28, padding: '0 8px', gap: 4, whiteSpace: 'nowrap' },
-        }, React.createElement(IconNewChatOutlineRegular, { size: 14 }), busy ? t('opening') : t('entry')),
+        }, React.createElement(IconThinkOutlineRegular, { size: 14 }), busy ? t('opening') : t('entry')),
         error && React.createElement('span', { role: 'alert', style: {
           position: 'absolute', top: '100%', right: 0, width: 280, zIndex: 10,
           padding: 8, background: 'var(--dsw-alias-bg-layer-3)', color: 'var(--dsw-alias-label-error)',
