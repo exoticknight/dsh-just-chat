@@ -1,6 +1,6 @@
 # 快速对话 · Just Chat
 
-[![npm version](https://img.shields.io/npm/v/dsh-just-chat?logo=npm)](https://www.npmjs.com/package/dsh-just-chat) [![CI](https://github.com/exoticknight/dsh-just-chat/actions/workflows/ci.yml/badge.svg)](https://github.com/exoticknight/dsh-just-chat/actions/workflows/ci.yml) [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](https://github.com/exoticknight/dsh-just-chat/blob/main/LICENSE) ![DSH compatibility: 0.1.5-rc.2](https://img.shields.io/badge/DSH-0.1.5--rc.2-blue) <a href="https://github.com/exoticknight/red"><img src="https://img.shields.io/badge/maintained_with-RED-C1121F" alt="Maintained with RED"></a>
+[![npm version](https://img.shields.io/npm/v/dsh-just-chat?logo=npm)](https://www.npmjs.com/package/dsh-just-chat) [![CI](https://github.com/exoticknight/dsh-just-chat/actions/workflows/ci.yml/badge.svg)](https://github.com/exoticknight/dsh-just-chat/actions/workflows/ci.yml) [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](https://github.com/exoticknight/dsh-just-chat/blob/main/LICENSE) ![DSH compatibility: 0.1.7-rc.1](https://img.shields.io/badge/DSH-0.1.7--rc.1-blue) <a href="https://github.com/exoticknight/red"><img src="https://img.shields.io/badge/maintained_with-RED-C1121F" alt="Maintained with RED"></a>
 
 [![dsh.pub registry status](https://dsh.pub/api/badges/exoticknight/dsh-just-chat.svg)](https://dsh.pub/en/plugins/?q=exoticknight%2Fdsh-just-chat)
 
@@ -20,7 +20,7 @@
 
 ### 安装插件
 
-适用于 DSH `0.1.5-rc.2` 的 Web 界面。先确认你的 DSH 已能正常对话，并且终端中可以使用 `dsh`。
+适用于 DSH `0.1.7-rc.1` 的 Web 界面。先确认你的 DSH 已能正常对话，并且终端中可以使用 `dsh`。
 
 通过 DSH 插件管理命令从 npm 安装：
 

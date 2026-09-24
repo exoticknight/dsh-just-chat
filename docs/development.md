@@ -14,7 +14,7 @@ npm run dev
 
 脚本会依次：
 
-1. 使用系统 pnpm 按锁文件安装依赖，包括项目内的 DSH `0.1.5-rc.2`。
+1. 使用系统 pnpm 按锁文件安装依赖，包括项目内的 DSH `0.1.7-rc.1`。
 2. 创建或复用仓库中的 `.dsh-dev`，作为调试用 `DSH_HOME`。
 3. 将当前插件安装到该 Home 的 `web` profile，同时安装调试伴随插件 `@michengai/dsh-archive-manager@0.1.41`。
 4. 使用项目内的 DSH 启动服务，在终端输出带登录 token 的本地访问链接。
