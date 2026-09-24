@@ -3,7 +3,7 @@ window.__ModuleLoader__.load({
   factory: (require) => {
     const React = require('react')
     const { createPortal } = require('react-dom')
-    const { Button, Tag, IconChevronDownOutlineRegular, IconThinkOutlineRegular } = require('@deepseek-ai/dsh-client-ui-primitives')
+    const { Button, IconThinkOutlineRegular } = require('@deepseek-ai/dsh-client-ui-primitives')
     const module = { exports: {} }
     const exports = module.exports
 
@@ -40,11 +40,7 @@ window.__ModuleLoader__.load({
         'settings.save': '保存',
         'settings.reset': '恢复默认模板',
         'settings.invalid': '请使用已列出的占位符，且展开后的名称须为 1–100 个字符。',
-        'settings.discard': '放弃更改',
-        'settings.unsaved': '未保存',
         'settings.saving': '保存中…',
-        'settings.expand': '展开设置',
-        'settings.collapse': '收起设置',
         'settings.readOnly': '当前设置只读。',
       },
       en: {
@@ -62,11 +58,7 @@ window.__ModuleLoader__.load({
         'settings.save': 'Save',
         'settings.reset': 'Restore default template',
         'settings.invalid': 'Use the listed placeholders and a resulting name of 1–100 characters.',
-        'settings.discard': 'Discard changes',
-        'settings.unsaved': 'Unsaved',
         'settings.saving': 'Saving…',
-        'settings.expand': 'Show settings',
-        'settings.collapse': 'Hide settings',
         'settings.readOnly': 'These settings are read-only.',
       },
     }
@@ -234,20 +226,11 @@ window.__ModuleLoader__.load({
       )
     }
 
-    // The host's PluginCard is private. Match its layout with owned, scoped styles.
+    // The detail page owns its title and chrome; the plugin owns only its form fields.
     const settingsCss = `
-      .jc-card{border:.5px solid var(--dsw-alias-border-l4);background:var(--dsw-alias-bg-layer-3);border-radius:16px;list-style:none;transition:border-color .16s,background .16s}
-      .jc-card:hover{border-color:var(--dsw-alias-label-dimmed)}
-      .jc-card[data-open=true]{background:var(--dsw-alias-bg-layer-2);border-color:var(--dsw-alias-label-dimmed)}
-      .jc-card-header{appearance:none;width:100%;font:inherit;color:inherit;text-align:left;cursor:pointer;background:transparent;border:0;border-radius:12px;display:flex;align-items:center;gap:12px;padding:14px 16px}
-      .jc-card-header:focus-visible{outline:2px solid var(--dsw-alias-brand-primary);outline-offset:-2px}
-      .jc-card-heading{display:flex;flex:1;flex-direction:column;gap:4px;min-width:0}
-      .jc-card-name{color:var(--dsw-alias-label-primary);font-size:15px;font-weight:600;line-height:1.4}
-      .jc-card-description{color:var(--dsw-alias-label-tertiary);font-size:13px;line-height:1.5}
-      .jc-card-chevron{color:var(--dsw-alias-label-tertiary);flex:none;transition:transform .16s}
-      .jc-card[data-open=true] .jc-card-chevron{transform:rotate(180deg)}
-      .jc-card-body{border-top:.5px solid var(--dsw-alias-border-l2);margin:0 16px;padding-bottom:8px}
-      .jc-field{display:flex;flex-direction:column;gap:6px;padding:12px 0}
+      .jc-settings-page{display:flex;flex-direction:column;gap:4px;max-width:720px}
+      .jc-settings-description{margin:0 0 8px;color:var(--dsw-alias-label-tertiary);font-size:13px;line-height:1.5}
+      .jc-field{display:flex;flex-direction:column;gap:6px;padding:14px 0}
       .jc-field+.jc-field{border-top:.5px solid var(--dsw-alias-border-l2)}
       .jc-field-head{display:flex;align-items:center;gap:8px}
       .jc-field-label{flex:1;min-width:0;color:var(--dsw-alias-label-primary);font-size:13px;font-weight:500;line-height:1.5}
@@ -257,15 +240,14 @@ window.__ModuleLoader__.load({
       .jc-field-input[aria-invalid=true]{border-color:var(--dsw-alias-label-error)}
       .jc-field-hint{margin:0;color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
       .jc-field-reset{background:none;border:0;padding:0;font:inherit;font-size:12px;color:var(--dsw-alias-label-secondary);cursor:pointer}
-      .jc-card-footer{display:flex;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:8px;border-top:.5px solid var(--dsw-alias-border-l2);padding:12px 0 4px}
-      .jc-card-error{color:var(--dsw-alias-label-error);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+      .jc-settings-footer{display:flex;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:8px;border-top:.5px solid var(--dsw-alias-border-l2);padding:16px 0 4px}
+      .jc-settings-error{color:var(--dsw-alias-label-error);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
     `
 
-    function PluginSettingsCard() {
+    function PluginSettingsPage({ view }) {
       const t = useJustChatT()
       const snapshot = useEntrySettings()
       const current = { ...defaultSettings, ...(snapshot.value ?? {}) }
-      const [open, setOpen] = React.useState(false)
       const [editor, setEditor] = React.useState(null)
       const [saving, setSaving] = React.useState(false)
       const [error, setError] = React.useState(null)
@@ -286,51 +268,41 @@ window.__ModuleLoader__.load({
           const ops = Object.keys(defaultSettings).filter((key) => draft[key] !== current[key])
             .map((key) => ({ op: 'set', path: [key], value: draft[key] }))
           await entrySettings.mutate(ops, editor?.revision)
-          setEditor(null); setOpen(false)
+          setEditor(null)
         } catch (error) { setError(error.message) }
         finally { setSaving(false) }
       }
+      if (view === 'summary') return t('settings.description')
       if (snapshot.status === 'unavailable') return null
-      return React.createElement('section', { className: 'jc-card', 'data-open': open },
-        React.createElement('button', {
-          className: 'jc-card-header', type: 'button', 'aria-expanded': open,
-          'aria-controls': 'just-chat-settings-body',
-          'aria-label': t(open ? 'settings.collapse' : 'settings.expand') + ': ' + t('entry'),
-          onClick: () => setOpen(!open),
-        },
-          React.createElement('span', { className: 'jc-card-heading' },
-            React.createElement('span', { className: 'jc-card-name' }, t('entry')),
-            React.createElement('span', { className: 'jc-card-description' }, t('settings.description'))),
-          dirty && React.createElement(Tag, { tone: 'neutral' }, t('settings.unsaved')),
-          React.createElement(IconChevronDownOutlineRegular, { className: 'jc-card-chevron', size: 14 })),
-        open && React.createElement('div', { className: 'jc-card-body', id: 'just-chat-settings-body' },
-          snapshot.writable === false && React.createElement('p', { className: 'jc-field-hint', role: 'status' }, t('settings.readOnly')),
-          ['hero', 'sidebar'].map((key) => React.createElement('div', { key, className: 'jc-field' },
-            React.createElement('label', { className: 'jc-field-head' },
-              React.createElement('span', { className: 'jc-field-label' }, t('settings.' + key)),
-              React.createElement('input', { className: 'jc-field-toggle', type: 'checkbox',
-                checked: draft[key], disabled, 'aria-label': t('settings.' + key),
-                onChange: (event) => edit(key, event.target.checked) })))),
-          React.createElement('div', { className: 'jc-field' },
-            React.createElement('div', { className: 'jc-field-head' },
-              React.createElement('label', { className: 'jc-field-label', htmlFor: 'just-chat-name-template' }, t('settings.template')),
-              React.createElement('button', { className: 'jc-field-reset', type: 'button', disabled,
-                onClick: () => edit('workspaceNameTemplate', defaultNameTemplate) }, t('settings.reset'))),
-            React.createElement('input', { className: 'jc-field-input', id: 'just-chat-name-template',
-              value: draft.workspaceNameTemplate, maxLength: 200, disabled, 'aria-invalid': !preview,
-              'aria-describedby': 'just-chat-template-help just-chat-template-preview',
-              onChange: (event) => edit('workspaceNameTemplate', event.target.value) }),
-            React.createElement('p', { id: 'just-chat-template-help', className: 'jc-field-hint' }, t('settings.help')),
-            React.createElement('p', { id: 'just-chat-template-preview', role: preview ? 'status' : 'alert',
-              className: preview ? 'jc-field-hint' : 'jc-card-error' },
-              preview ? t('settings.preview') + ': ' + preview : t('settings.invalid'))),
-          error && React.createElement('p', { role: 'alert', className: 'jc-card-error' }, error),
-          React.createElement('div', { className: 'jc-card-footer' },
-            React.createElement(Button, { variant: 'outline', size: 'sm', disabled: !dirty || saving,
-              onClick: () => { setEditor(null); setError(null) } }, t('settings.discard')),
-            React.createElement(Button, { size: 'sm', disabled: disabled || !dirty || !preview,
-              onClick: save }, t(saving ? 'settings.saving' : 'settings.save'))),
-        ))
+      return React.createElement(
+        'section',
+        { className: 'jc-settings-page' },
+        React.createElement('p', { className: 'jc-settings-description' }, t('settings.description')),
+        snapshot.writable === false && React.createElement('p', { className: 'jc-field-hint', role: 'status' }, t('settings.readOnly')),
+        ['hero', 'sidebar'].map((key) => React.createElement('div', { key, className: 'jc-field' },
+          React.createElement('label', { className: 'jc-field-head' },
+            React.createElement('span', { className: 'jc-field-label' }, t('settings.' + key)),
+            React.createElement('input', { className: 'jc-field-toggle', type: 'checkbox',
+              checked: draft[key], disabled, 'aria-label': t('settings.' + key),
+              onChange: (event) => edit(key, event.target.checked) })))),
+        React.createElement('div', { className: 'jc-field' },
+          React.createElement('div', { className: 'jc-field-head' },
+            React.createElement('label', { className: 'jc-field-label', htmlFor: 'just-chat-name-template' }, t('settings.template')),
+            React.createElement('button', { className: 'jc-field-reset', type: 'button', disabled,
+              onClick: () => edit('workspaceNameTemplate', defaultNameTemplate) }, t('settings.reset'))),
+          React.createElement('input', { className: 'jc-field-input', id: 'just-chat-name-template',
+            value: draft.workspaceNameTemplate, maxLength: 200, disabled, 'aria-invalid': !preview,
+            'aria-describedby': 'just-chat-template-help just-chat-template-preview',
+            onChange: (event) => edit('workspaceNameTemplate', event.target.value) }),
+          React.createElement('p', { id: 'just-chat-template-help', className: 'jc-field-hint' }, t('settings.help')),
+          React.createElement('p', { id: 'just-chat-template-preview', role: preview ? 'status' : 'alert',
+              className: preview ? 'jc-field-hint' : 'jc-settings-error' },
+            preview ? t('settings.preview') + ': ' + preview : t('settings.invalid'))),
+        error && React.createElement('p', { role: 'alert', className: 'jc-settings-error' }, error),
+        React.createElement('div', { className: 'jc-settings-footer' },
+          React.createElement(Button, { size: 'sm', disabled: disabled || !dirty || !preview,
+            onClick: save }, t(saving ? 'settings.saving' : 'settings.save'))),
+      )
     }
 
     const inject = [
@@ -409,14 +381,13 @@ window.__ModuleLoader__.load({
         ChatPanel,
       ))
 
-      ctx.slots.inject('settings.plugins.tab', () => ctx.slots.register(
+      ctx.slots.inject('plugins.bundle.config', () => ctx.slots.register(
         {
-          name: 'settings.plugins.tab',
-          id: settingsEntryId,
-          order: 100,
-          label: () => locale.bind(localeNamespace)('entry'),
+          name: 'plugins.bundle.config',
+          key: settingsEntryId,
+          locale: localeNamespace,
         },
-        PluginSettingsCard,
+        PluginSettingsPage,
       ))
 
 
