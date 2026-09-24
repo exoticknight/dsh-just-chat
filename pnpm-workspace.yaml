@@ -1,3 +1,6 @@
+# Disable pnpm's default 24-hour delay for newly published dependencies.
+minimumReleaseAge: 0
+
 allowBuilds:
   '@deepseek-ai/dsh-subprocess-local': true
   '@google/genai': true
