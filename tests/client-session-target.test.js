@@ -3,7 +3,7 @@ import fs from 'node:fs/promises'
 import test from 'node:test'
 import vm from 'node:vm'
 
-test('Just Chat opens an independent native workspace when no workspace is selected', async () => {
+test('Just Chat opens a native conversation when no workspace is selected', async () => {
   const source = await fs.readFile(new URL('../client.js', import.meta.url), 'utf8')
   let factory
   const moduleLoader = {
@@ -50,7 +50,12 @@ test('Just Chat opens an independent native workspace when no workspace is selec
       } }
       return {}
     },
-    settingsScope: { bind: () => settings },
+    configForms: {
+      get(id) {
+        assert.equal(id, 'dsh-just-chat')
+        return settings
+      },
+    },
     slots: {
       inject(name, callback) {
         injections.set(name, callback)
@@ -87,7 +92,10 @@ test('Just Chat opens an independent native workspace when no workspace is selec
 
   plugin.apply(ctx)
   assert.equal(injections.has('settings.general.item'), false)
-  assert.equal(injections.has('settings.plugin.item'), true)
+  assert.equal(injections.has('settings.plugin.item'), false)
+  assert.equal(injections.has('plugins.bundle.config'), true)
+  injections.get('plugins.bundle.config')()
+  assert.equal(registrations.some(({ spec }) => spec.name === 'plugins.bundle.config' && spec.key === 'dsh-just-chat'), true)
   injections.get('main')()
   const panel = registrations.find(({ spec }) => spec.key === 'dsh-just-chat')?.component
   assert.ok(panel)
