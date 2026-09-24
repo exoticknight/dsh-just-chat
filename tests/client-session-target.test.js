@@ -97,7 +97,7 @@ test('Just Chat opens a native conversation when no workspace is selected', asyn
   injections.get('plugins.bundle.config')()
   assert.equal(registrations.some(({ spec }) => spec.name === 'plugins.bundle.config' && spec.key === 'dsh-just-chat'), true)
   injections.get('main')()
-  const panel = registrations.find(({ spec }) => spec.key === 'dsh-just-chat')?.component
+  const panel = registrations.find(({ spec }) => spec.name === 'main' && spec.key === 'dsh-just-chat')?.component
   assert.ok(panel)
   panel()
   await new Promise(setImmediate)
