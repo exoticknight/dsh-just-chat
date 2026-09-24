@@ -245,6 +245,17 @@ window.__ModuleLoader__.load({
     `
 
     function PluginSettingsPage({ view }) {
+      return view === 'summary'
+        ? React.createElement(PluginSettingsSummary)
+        : React.createElement(PluginSettingsForm)
+    }
+
+    function PluginSettingsSummary() {
+      const t = useJustChatT()
+      return t('settings.description')
+    }
+
+    function PluginSettingsForm() {
       const t = useJustChatT()
       const snapshot = useEntrySettings()
       const current = { ...defaultSettings, ...(snapshot.value ?? {}) }
@@ -272,7 +283,6 @@ window.__ModuleLoader__.load({
         } catch (error) { setError(error.message) }
         finally { setSaving(false) }
       }
-      if (view === 'summary') return t('settings.description')
       if (snapshot.status === 'unavailable') return null
       return React.createElement(
         'section',
