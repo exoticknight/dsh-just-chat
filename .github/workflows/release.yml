@@ -70,6 +70,8 @@ jobs:
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
           args=(--verify-tag --generate-notes --title "$RELEASE_TAG")
+          notes="docs/release-notes/${RELEASE_TAG}.md"
+          if [[ -f "$notes" ]]; then args+=(--notes-file "$notes"); fi
           if [[ "$RELEASE_TAG" == *-* ]]; then args+=(--prerelease); fi
           if ! gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             gh release create "$RELEASE_TAG" "${args[@]}"

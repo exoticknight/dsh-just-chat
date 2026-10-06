@@ -1,11 +1,12 @@
 import { spawn } from 'node:child_process';
-import { access, mkdir } from 'node:fs/promises';
+import { access, mkdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dshHome = path.join(projectRoot, '.dsh-dev');
 const dshBin = path.join(projectRoot, 'node_modules', '@deepseek-ai', 'dsh', 'lib', 'bin.js');
+const dshPackageJson = path.join(projectRoot, 'node_modules', '@deepseek-ai', 'dsh', 'package.json');
 const archivePlugin = '@michengai/dsh-archive-manager@0.1.41';
 const commandEnv = { ...process.env, DSH_HOME: dshHome };
 
@@ -58,16 +59,19 @@ async function installDshDev() {
   await mkdir(dshHome, { recursive: true });
 
   await run(process.execPath, [dshBin, 'plugin', '--profile', 'web', 'add', '.']);
-  // Dev companion only: do not add archive management to the published bundle.
-  await run(process.execPath, [
-    dshBin,
-    'plugin',
-    '--profile',
-    'web',
-    'add',
-    archivePlugin,
-    '--registry=https://registry.npmjs.org/',
-  ]);
+  const { version: dshVersion } = JSON.parse(await readFile(dshPackageJson, 'utf8'));
+  if (dshVersion.startsWith('0.1.')) {
+    // This optional companion does not pass DSH 0.2's plugin peer preflight.
+    await run(process.execPath, [
+      dshBin,
+      'plugin',
+      '--profile',
+      'web',
+      'add',
+      archivePlugin,
+      '--registry=https://registry.npmjs.org/',
+    ]);
+  }
 
   console.log(`DSH development Home ready: ${dshHome}`);
   return run;

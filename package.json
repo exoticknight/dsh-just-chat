@@ -51,8 +51,10 @@
     },
     "compatibility": {
       "dshReleases": {
-        "0.1.7-rc.1": "compatible"
-      }
+        "0.1.7-rc.1": "compatible",
+        "0.2.0-rc.2": "compatible"
+      },
+      "dsh": ">=0.1.7-rc.1 <0.3.0"
     },
     "client": {
       "platform": "web",
@@ -70,11 +72,11 @@
     }
   },
   "dependencies": {
-    "@deepseek-ai/dsh-home-paths": "0.1.7-rc.1",
+    "@deepseek-ai/dsh-home-paths": "0.2.0-rc.2",
     "@deepseek-ai/schemastery": "^3.18.3"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh": "0.1.7-rc.1",
+    "@deepseek-ai/dsh": "0.2.0-rc.2",
     "@deepseek-ai/cordis-plugin-group": "~1.0.4",
     "execa": "^10.0.1"
   }

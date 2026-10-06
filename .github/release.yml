@@ -1,0 +1,15 @@
+# GitHub uses the first matching category for each pull request.
+changelog:
+  categories:
+    - title: 重大变更
+      labels:
+        - breaking-change
+    - title: 新功能
+      labels:
+        - enhancement
+    - title: 修复
+      labels:
+        - bug
+    - title: 其他变更
+      labels:
+        - '*'

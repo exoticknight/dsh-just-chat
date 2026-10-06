@@ -93,8 +93,21 @@ npm pack --dry-run
 仓库提供以下自动化：
 
 - `ci.yml`：main 推送和 PR 触发，在 Windows/Linux、Node 22.19/24 上按锁文件安装依赖，检查 JavaScript 语法、运行现有测试并预检发布包。
-- `release.yml`：推送 `v*` tag 后先运行同一套 CI；tag 必须等于 `v` 加 package.json 的版本号。通过后发布 npm，随后创建带自动发布说明的 GitHub Release。含预发布后缀的版本使用 npm `next` 和 GitHub prerelease，其余使用 `latest`。
+- `release.yml`：推送 `v*` tag 后先运行同一套 CI；tag 必须等于 `v` 加 package.json 的版本号。通过后发布 npm，随后创建 GitHub Release。含预发布后缀的版本使用 npm `next` 和 GitHub prerelease，其余使用 `latest`。
 - Dependabot：每周检查 GitHub Actions 更新并创建更新 PR。
+
+GitHub Releases 是本项目唯一的版本历史；README 链接到 Releases，不另维护 `CHANGELOG.md`。GitHub 自动按 `.github/release.yml` 中的 PR 标签分组：
+
+| PR 标签 | Release 分组 |
+| --- | --- |
+| `breaking-change` | 重大变更 |
+| `enhancement` | 新功能 |
+| `bug` | 修复 |
+| 其他或无标签 | 其他变更 |
+
+分类所用的标签需要先存在于 GitHub 仓库；缺少时，在仓库的 **Issues → Labels** 中创建。发布说明按 PR 上的标签分类（issue 标签不替代 PR 标签），匹配顺序见 `.github/release.yml`。需要补充版本重点、破坏性变更细节或迁移步骤时，可在发版前创建 `docs/release-notes/vX.Y.Z.md`；文件名要与 tag 完全一致，预发布版本也带上 `-rc.1` 等后缀。发布工作流会把该文件放在自动生成的 PR 变更列表之前。PR 标题会成为版本条目，因此应直接描述用户可见的变化。
+
+未通过 PR 合并的用户可见变更可能不会出现在自动 PR 列表中；这类内容应写入对应版本说明文件。
 
 CI 不启动模型服务，真实对话和界面流程仍按上面的业务验证执行。
 
@@ -105,12 +118,14 @@ CI 不启动模型服务，真实对话和界面流程仍按上面的业务验�
 3. 在 npm 包设置中添加 GitHub Actions Trusted Publisher，填写实际 owner/repository、工作流文件名 `release.yml`、environment `npm`，允许直接 `npm publish`。见 [npm Trusted Publishing 配置说明](https://docs.npmjs.com/trusted-publishers/)。如果新包尚不能配置 Trusted Publisher，先由维护者登录 npm 手动完成首次发布，再绑定后续自动发布。
 4. 工作流使用 Node 24 和 OIDC，不需保存 NPM_TOKEN。npm CLI 需至少 11.5.1。
 
-发布一个新版本（以下以 0.1.1 为例，工作区应先保持干净）：
+发布一个新版本（下文 `X.Y.Z` 表示选定的目标版本号，工作区应先保持干净）：
+
+如果需要版本重点或迁移说明，先按上文说明创建 `docs/release-notes/vX.Y.Z.md`。
 
 ```sh
-npm version 0.1.1
+npm version X.Y.Z
 git push origin main
-git push origin v0.1.1
+git push origin vX.Y.Z
 ```
 
 `npm version` 会更新版本、提交并创建 tag；首次手动发布过的版本不要再次触发 npm 发布。npm 版本不可覆盖。若 npm 成功但 GitHub Release 失败，使用 Actions 的 **Re-run failed jobs**，只重试后续 Release job；不要重跑已经成功的 npm 发布 job。
