@@ -23,7 +23,7 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "version": "0.1.6",
+  "version": "0.1.7",
   "license": "Apache-2.0",
   "author": "exoticknight",
   "type": "module",
@@ -52,7 +52,8 @@
     "compatibility": {
       "dshReleases": {
         "0.1.7-rc.1": "compatible",
-        "0.2.0-rc.2": "compatible"
+        "0.2.0-rc.2": "compatible",
+        "0.2.2-rc.5": "compatible"
       },
       "dsh": ">=0.1.7-rc.1 <0.3.0"
     },
