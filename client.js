@@ -3,7 +3,7 @@ window.__ModuleLoader__.load({
   factory: (require) => {
     const React = require('react')
     const { createPortal } = require('react-dom')
-    const { Button, IconThinkOutlineRegular } = require('@deepseek-ai/dsh-client-ui-primitives')
+    const { Button, IconThinkOutlineRegular, Input, Switch } = require('@deepseek-ai/dsh-client-ui-primitives')
     const module = { exports: {} }
     const exports = module.exports
 
@@ -135,15 +135,15 @@ window.__ModuleLoader__.load({
       return openingChat
     }
 
-    function useHeroMount() {
+    function useHeroMount(enabled) {
       const [mount, setMount] = React.useState(null)
       React.useEffect(() => {
+        if (!enabled) {
+          setMount(null)
+          return
+        }
         const node = document.createElement('span')
         node.dataset.justChatMount = 'true'
-        const style = document.createElement('style')
-        style.textContent = 'div:has(> [data-just-chat-mount]) { flex-wrap: wrap; row-gap: 4px; }'
-        document.head.appendChild(style)
-        Object.assign(node.style, { display: 'inline-flex', minWidth: '0', flexShrink: '0', marginLeft: '6px' })
         const sync = () => {
           const slot = document.querySelector('[data-slot="conversation.hero.agentPreset"]')
           if (!slot) {
@@ -158,18 +158,19 @@ window.__ModuleLoader__.load({
         const observer = new MutationObserver(sync)
         observer.observe(document.getElementById('root') ?? document.body, { childList: true, subtree: true })
         sync()
-        return () => { observer.disconnect(); node.remove(); style.remove() }
-      }, [])
+        return () => { observer.disconnect(); node.remove() }
+      }, [enabled])
       return mount
     }
 
     function JustChatOverlay() {
       const t = useJustChatT()
       const settings = useEntrySettings()
-      const mount = useHeroMount()
+      const enabled = settingEnabled(settings, 'hero')
+      const mount = useHeroMount(enabled)
       const [busy, setBusy] = React.useState(false)
       const [error, setError] = React.useState(null)
-      if (!mount || !settingEnabled(settings, 'hero')) return null
+      if (!enabled || !mount) return null
       const openChat = async () => {
         if (busy) return
         setBusy(true)
@@ -179,10 +180,11 @@ window.__ModuleLoader__.load({
       }
       return createPortal(React.createElement('span', { style: { position: 'relative' } },
         React.createElement(Button, {
-          variant: 'ghost', size: 'sm', onClick: openChat, disabled: busy,
+          className: 'jc-hero-button', type: 'button', variant: 'ghost', size: 'sm',
+          icon: React.createElement(IconThinkOutlineRegular, { size: 16 }),
+          onClick: openChat, disabled: busy,
           'aria-label': busy ? t('opening') : t('entry'), title: t('entry'),
-          style: { borderRadius: 16, height: 28, padding: '0 8px', gap: 4, whiteSpace: 'nowrap' },
-        }, React.createElement(IconThinkOutlineRegular, { size: 14 }), busy ? t('opening') : t('entry')),
+        }, busy ? t('opening') : t('entry')),
         error && React.createElement('span', { role: 'alert', style: {
           position: 'absolute', top: '100%', right: 0, width: 280, zIndex: 10,
           padding: 8, background: 'var(--dsw-alias-bg-layer-3)', color: 'var(--dsw-alias-label-error)',
@@ -226,20 +228,20 @@ window.__ModuleLoader__.load({
       )
     }
 
-    // The detail page owns its title and chrome; the plugin owns only its form fields.
-    const settingsCss = `
+    const uiCss = `
+      div:has(> [data-just-chat-mount]){flex-wrap:wrap;row-gap:4px}
+      [data-just-chat-mount]{display:inline-flex;flex:none}
+      /* Match the adjacent DSH AgentPresetSeat typography and inline padding. */
+      [data-just-chat-mount] .jc-hero-button{padding-inline:8px;font-size:13px;font-weight:500;line-height:20px;white-space:nowrap}
       .jc-settings-page{display:flex;flex-direction:column;gap:4px;max-width:720px}
       .jc-settings-description{margin:0 0 8px;color:var(--dsw-alias-label-tertiary);font-size:13px;line-height:1.5}
       .jc-field{display:flex;flex-direction:column;gap:6px;padding:14px 0}
       .jc-field+.jc-field{border-top:.5px solid var(--dsw-alias-border-l2)}
-      .jc-field-head{display:flex;align-items:center;gap:8px}
+      .jc-field-head{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
       .jc-field-label{flex:1;min-width:0;color:var(--dsw-alias-label-primary);font-size:13px;font-weight:500;line-height:1.5}
-      .jc-field-toggle{accent-color:var(--dsw-alias-brand-primary);width:16px;height:16px;cursor:pointer}
-      .jc-field-input{box-sizing:border-box;width:100%;height:34px;border:.5px solid var(--dsw-alias-border-l4);background:var(--dsw-alias-bg-layer-3);font:inherit;color:var(--dsw-alias-label-primary);border-radius:8px;padding:0 12px;font-size:13px;line-height:1.5}
-      .jc-field-input:focus-visible{outline:2px solid var(--dsw-alias-brand-primary);outline-offset:1px}
-      .jc-field-input[aria-invalid=true]{border-color:var(--dsw-alias-label-error)}
+      .jc-field-input:has(input[aria-invalid=true]){border-color:var(--dsw-alias-label-error)}
+      .jc-field-input:has(input[aria-invalid=true]:focus-visible){outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:1px}
       .jc-field-hint{margin:0;color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
-      .jc-field-reset{background:none;border:0;padding:0;font:inherit;font-size:12px;color:var(--dsw-alias-label-secondary);cursor:pointer}
       .jc-settings-footer{display:flex;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:8px;border-top:.5px solid var(--dsw-alias-border-l2);padding:16px 0 4px}
       .jc-settings-error{color:var(--dsw-alias-label-error);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
     `
@@ -292,15 +294,15 @@ window.__ModuleLoader__.load({
         ['hero', 'sidebar'].map((key) => React.createElement('div', { key, className: 'jc-field' },
           React.createElement('label', { className: 'jc-field-head' },
             React.createElement('span', { className: 'jc-field-label' }, t('settings.' + key)),
-            React.createElement('input', { className: 'jc-field-toggle', type: 'checkbox',
-              checked: draft[key], disabled, 'aria-label': t('settings.' + key),
-              onChange: (event) => edit(key, event.target.checked) })))),
+            React.createElement(Switch, {
+              checked: draft[key], disabled, label: t('settings.' + key),
+              onChange: (next) => edit(key, next) })))),
         React.createElement('div', { className: 'jc-field' },
           React.createElement('div', { className: 'jc-field-head' },
             React.createElement('label', { className: 'jc-field-label', htmlFor: 'just-chat-name-template' }, t('settings.template')),
-            React.createElement('button', { className: 'jc-field-reset', type: 'button', disabled,
+            React.createElement(Button, { type: 'button', variant: 'ghost', size: 'sm', disabled,
               onClick: () => edit('workspaceNameTemplate', defaultNameTemplate) }, t('settings.reset'))),
-          React.createElement('input', { className: 'jc-field-input', id: 'just-chat-name-template',
+          React.createElement(Input, { className: 'jc-field-input', id: 'just-chat-name-template',
             value: draft.workspaceNameTemplate, maxLength: 200, disabled, 'aria-invalid': !preview,
             'aria-describedby': 'just-chat-template-help just-chat-template-preview',
             onChange: (event) => edit('workspaceNameTemplate', event.target.value) }),
@@ -310,7 +312,7 @@ window.__ModuleLoader__.load({
             preview ? t('settings.preview') + ': ' + preview : t('settings.invalid'))),
         error && React.createElement('p', { role: 'alert', className: 'jc-settings-error' }, error),
         React.createElement('div', { className: 'jc-settings-footer' },
-          React.createElement(Button, { size: 'sm', disabled: disabled || !dirty || !preview,
+          React.createElement(Button, { type: 'button', variant: 'primary', size: 'sm', disabled: disabled || !dirty || !preview,
             onClick: save }, t(saving ? 'settings.saving' : 'settings.save'))),
       )
     }
@@ -329,11 +331,11 @@ window.__ModuleLoader__.load({
       runtimeCtx = ctx
       ctx.effect(() => {
         const style = document.createElement('style')
-        style.dataset.pluginCss = 'dsh-just-chat/settings'
-        style.textContent = settingsCss
+        style.dataset.pluginCss = 'dsh-just-chat/ui'
+        style.textContent = uiCss
         document.head.appendChild(style)
         return () => style.remove()
-      }, 'dsh-just-chat: settings styles')
+      }, 'dsh-just-chat: UI styles')
       const locale = ctx.get('locale')
       entrySettings = ctx.configForms.get(settingsEntryId)
 
